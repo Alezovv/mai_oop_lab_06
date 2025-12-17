@@ -5,8 +5,24 @@
 #include <fstream>
 #include <iostream>
 
-void Dungeon::AddNPC(std::unique_ptr<NPC> npc)
+bool Dungeon::IsNameUnique(const std::string& name) const
 {
+    for (const auto& npc : npcs_)
+    {
+        if (npc->getName() == name)
+            return false;
+    }
+    return true; 
+}
+
+void Dungeon::AddNPC(std::unique_ptr<NPC> npc) // Добавление NPC
+{
+    if (!IsNameUnique(npc->getName())) // уникальность имен
+    {
+        throw std::runtime_error(
+            "NPC with name '" + npc->getName() + "' already exists"
+        );
+    }
     npcs_.push_back(std::move(npc));
 }
 
@@ -15,7 +31,7 @@ void Dungeon::AddObserver(std::shared_ptr<IObserver> observer)
     observers_.push_back(observer);
 }
 
-void Dungeon::SaveToFile(const std::string &filename) const
+void Dungeon::SaveToFile(const std::string &filename) const // Сохранение и загрузка из файла
 {
     std::ofstream out(filename);
     for (const auto &npc : npcs_)
@@ -39,7 +55,7 @@ void Dungeon::LoadFromFile(const std::string &filename)
     }
 }
 
-void Dungeon::Print() const
+void Dungeon::Print() const // Печать перечня объектов
 {
     std::cout << "Dungeon Contents" << std::endl;
     for (const auto &npc : npcs_)
@@ -53,9 +69,9 @@ void Dungeon::Battle(double range)
 {
     std::cout << "Battle Started (Range: " << range << ")" << std::endl;
 
-    FightVisitor visitor(npcs_, range, observers_);
+    FightVisitor visitor(npcs_, range, observers_); // Боевой режим с дальностью
 
-    for (auto &npc : npcs_)
+    for (auto &npc : npcs_) // NPC сражаются «каждый с каждым»
     {
         if (npc->isAlive())
         {
@@ -65,7 +81,7 @@ void Dungeon::Battle(double range)
 
     auto newEnd = std::remove_if(npcs_.begin(), npcs_.end(),
                                  [](const std::unique_ptr<NPC> &n)
-                                 { return !n->isAlive(); });
+                                 { return !n->isAlive(); }); // Проигравший NPC удаляется
     npcs_.erase(newEnd, npcs_.end());
 
     std::cout << "Battle Ended" << std::endl;

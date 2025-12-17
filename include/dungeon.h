@@ -10,6 +10,7 @@
 class Dungeon
 {
 public:
+    bool Dungeon::IsNameUnique(const std::string& name) const;
     void AddNPC(std::unique_ptr<NPC> npc);
     void AddObserver(std::shared_ptr<IObserver> observer);
 
