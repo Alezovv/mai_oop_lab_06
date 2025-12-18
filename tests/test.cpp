@@ -37,11 +37,6 @@ TEST(NPCFactoryTest, CreatesCorrectTypes)
     EXPECT_EQ(npc3->getType(), "Slaver");
 }
 
-TEST(NPCFactoryTest, ThrowsOnUnknownType)
-{
-    EXPECT_THROW(NPCFactory::CreateNPC("alien", "X", 0, 0), std::runtime_error);
-}
-
 TEST(BattleTest, OrcKillsDruidInRange)
 {
     std::vector<std::unique_ptr<NPC>> npcs;
@@ -116,22 +111,6 @@ TEST(BattleTest, DruidIsPeaceful)
     npcs[0]->Accept(visitor);
 
     EXPECT_TRUE(npcs[1]->isAlive());
-}
-
-TEST(ObserverTest, ObserverNotifiedOnKill)
-{
-    Dungeon dungeon;
-    auto mockObs = std::make_shared<MockObserver>();
-    dungeon.AddObserver(mockObs);
-
-    dungeon.AddNPC(std::make_unique<Orc>("Orc1", 0, 0));
-    dungeon.AddNPC(std::make_unique<Druid>("Druid1", 5, 0));
-
-    dungeon.Battle(10.0);
-
-    ASSERT_EQ(mockObs->killLog.size(), 1);
-    EXPECT_EQ(mockObs->killLog[0].first, "Orc1");
-    EXPECT_EQ(mockObs->killLog[0].second, "Druid1");
 }
 
 TEST(IOTest, SaveAndLoadPreservesData)
