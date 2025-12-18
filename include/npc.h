@@ -18,7 +18,7 @@ public:
     double getY() const;
 
     bool isAlive() const;
-    void kill(); // Просто меняет статус
+    void kill();
 
     virtual void Accept(FightVisitor &visitor) = 0;
 

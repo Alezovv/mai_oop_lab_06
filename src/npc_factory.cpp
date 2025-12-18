@@ -14,6 +14,10 @@ std::string ToLower(std::string s)
 
 std::unique_ptr<NPC> NPCFactory::CreateNPC(const std::string &type, const std::string &name, double x, double y)
 {
+    if (x <= 0 || x > 500 || y < 0 || y > 500) {
+            throw std::invalid_argument("Invalid NPC coordinates");
+    
+        }
     std::string t = ToLower(type);
     if (t == "druid")
         return std::make_unique<Druid>(name, x, y);

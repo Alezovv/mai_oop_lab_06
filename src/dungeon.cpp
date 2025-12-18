@@ -15,14 +15,28 @@ bool Dungeon::IsNameUnique(const std::string& name) const
     return true; 
 }
 
-void Dungeon::AddNPC(std::unique_ptr<NPC> npc) // Добавление NPC
+void Dungeon::AddNPC(std::unique_ptr<NPC> npc)
 {
-    if (!IsNameUnique(npc->getName())) // уникальность имен
+    // Проверка уникальности имени
+    if (!IsNameUnique(npc->getName()))
     {
         throw std::runtime_error(
             "NPC with name '" + npc->getName() + "' already exists"
         );
     }
+
+    double x = npc->getX();
+    double y = npc->getY();
+    
+    if (x <= 0 || x > 500 || y < 0 || y > 500)
+    {
+        throw std::runtime_error(
+            "NPC coordinates out of bounds: (" + 
+            std::to_string(x) + ", " + std::to_string(y) + 
+            "). Must be: 0 < x <= 500, 0 <= y <= 500"
+        );
+    }
+    
     npcs_.push_back(std::move(npc));
 }
 
@@ -51,6 +65,14 @@ void Dungeon::LoadFromFile(const std::string &filename)
     double x, y;
     while (in >> type >> name >> x >> y)
     {
+        if (x <= 0 || x > 500 || y < 0 || y > 500)
+        {
+            std::cerr << "Warning: NPC " << name 
+                      << " has invalid coordinates (" 
+                      << x << ", " << y << "). Skipping." << std::endl;
+            continue;
+        }
+        
         npcs_.push_back(NPCFactory::CreateNPC(type, name, x, y));
     }
 }
